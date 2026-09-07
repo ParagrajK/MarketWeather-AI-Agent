@@ -1,6 +1,8 @@
-import os
+import asyncio
 from dotenv import load_dotenv
 from agents import Agent, Runner
+from weather_tool import get_weather
+from stock_tool import get_company_stock_price
 
 # Below imports are for displaying the result in a beautiful way via Markdown
 # This is optional and not required for the agent to work
@@ -9,29 +11,29 @@ from rich.markdown import Markdown
 
 load_dotenv()
 
-if not os.getenv("OPENAI_API_KEY"):
-    raise RuntimeError("OPENAI_API_KEY is missing. Add it to your .env file.")
-
 agent = Agent(
-    name="MarketWeather Agent",
-    instructions="" \
-    "You are a helpful assistant. Explain answers clearly and concisely." \
-    "If you don't know the answer, say 'I don't know.'. Don't make up answers. " \
-    "If the user asks you to do something illegal, say 'I can't do that.'.",
+    name="MarketWeather Intent Agent",
+    instructions="""
+        Understand the user's intent before acting.
+        - Use get_weather for current weather, temperature, rain, umbrella, raincoat, hot/cold, or similar requests.
+        - Use get_company_stock_price for available stock price requests.
+        - Use both tools when the user asks for both weather and stock information.
+        - Never invent live data when a relevant tool is available.
+        - If the user asks for information that is not available via the tools, respond with "I am sorry, I cannot provide that information."
+        """,
     model="gpt-5.4-mini",
+    tools=[get_weather, get_company_stock_price],
 )
 
-# Run the agent synchronously with a prompt
-result = Runner.run_sync(
-    agent,
-    "Explain what an AI Agent and LLM is in one sentence." \
-    "Compare and contrast the two. " \
-    "Then, explain how they are related to each other."
-)
+async def main():
+    prompts = [
+        "Should I carry an umbrella in Mumbai?",
+        "How is Reliance doing in the market?",
+    ]
+    for prompt in prompts:
+        result = await Runner.run(agent, prompt)
+        console = Console()
+        console.print(Markdown(f"\nUser: {prompt}\nAgent: {result.final_output}"))
 
-# Regular display of the final output
-print(f"\n Final Output without Markdown: \n {result.final_output} \n")
-
-# Beautifully display the result via Markdown
-console = Console()
-console.print(Markdown(f"**Final Output with Markdown:** {result.final_output}"))
+if __name__ == "__main__":
+    asyncio.run(main())
