@@ -16,3 +16,8 @@ class AgentSummary(BaseModel):
     weather_report: Optional[str] = Field(description="The current weather report for a specified city.")
     stock_summary: Optional[StockSummary] = Field(description="The stock summary for a specified company.")
     raw_response: str = Field(description="The raw response from the agent.")
+
+class Guardrails(BaseModel):
+    """Schema for the agent's final response."""
+
+    is_valid: bool = Field(description="Indicates whether the agent's request / response is valid according to the defined guardrails.")
