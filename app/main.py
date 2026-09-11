@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from agents import Agent, Runner, SQLiteSession
 from weather_tool import get_weather
 from stock_tool import get_company_stock_price
+from model import AgentSummary
 
 load_dotenv()
 
@@ -21,6 +22,7 @@ agent = Agent(
         """,
     model="gpt-5.4-mini",
     tools=[get_weather, get_company_stock_price],
+    output_type=AgentSummary,
 )
 
 async def main(choice: int = 1):
