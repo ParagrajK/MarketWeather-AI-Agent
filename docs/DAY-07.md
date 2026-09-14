@@ -91,8 +91,7 @@ Render service.
 ```text
 Runtime: Python
 Build Command: pip install -r requirements.txt
-Root Directory: app
-Start Command: uvicorn app:app --host 0.0.0.0 --port $PORT
+Start Command: cd app && uvicorn app:app --host 0.0.0.0 --port $PORT
 ```
 
 The `0.0.0.0` host makes the application reachable from Render, and `$PORT`
