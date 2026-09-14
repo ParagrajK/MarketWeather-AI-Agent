@@ -21,3 +21,11 @@ class Guardrails(BaseModel):
     """Schema for the agent's final response."""
 
     is_valid: bool = Field(description="Indicates whether the agent's request / response is valid according to the defined guardrails.")
+
+class ChatRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=1000)
+    conversation_id: str = Field(description="Conversation ID for context.")
+
+class ChatResponse(BaseModel):
+    response: AgentSummary = Field(description="The agent's final response.")
+    conversation_id: str = Field(description="Conversation ID for context.")
